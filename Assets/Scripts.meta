@@ -1,5 +1,9 @@
 fileFormatVersion: 2
-guid: 61e12e3849bea944eaad31eae85cccb2
+<<<<<<< HEAD
+guid: a6b7de3489b7b7c42899a9be75093bde
+=======
+guid: d8fb99365d3f23e4882d5dccdafad20e
+>>>>>>> e0cb60d (Skeleton for main menu.)
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
