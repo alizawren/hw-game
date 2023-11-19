@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 public class GameboyScript : MonoBehaviour
 {
+    public AudioSource music;
+    public AudioSource musicTrue;
 
     // 0 == put away
     public Animator animator;
@@ -28,6 +30,10 @@ public class GameboyScript : MonoBehaviour
         startX = transform.position.x;
         startY = transform.position.y;
         startScale = transform.localScale.x;
+        music.Play();
+        music.volume = 0;
+        musicTrue.Play();
+        musicTrue.volume = 0;
     }
 
     // Update is called once per frame
@@ -60,11 +66,16 @@ public class GameboyScript : MonoBehaviour
 
         if (!isGaming && takeoutProgress >= takeoutProgressFinish - 0.04f) {
             isGaming = true;
+            music.volume = 1;
             animator.Play("loop");
         } else if (isGaming && takeoutProgress < takeoutProgressFinish - 0.04f) {
             isGaming = false;
             animator.Play("off");
         }
+        if (!attemptingToPlay) {
+            music.volume = Mathf.Max(0, takeoutProgress * 2 - 1);
+        }
+
         controller.SetGaming(isGaming);
          
     }
