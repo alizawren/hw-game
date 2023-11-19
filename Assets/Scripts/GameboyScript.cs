@@ -61,11 +61,11 @@ public class GameboyScript : MonoBehaviour
         if (!isGaming && takeoutProgress >= takeoutProgressFinish - 0.04f) {
             isGaming = true;
             animator.Play("loop");
-            controller.SetGaming(true);
         } else if (isGaming && takeoutProgress < takeoutProgressFinish - 0.04f) {
+            isGaming = false;
             animator.Play("off");
-            controller.SetGaming(false);
         }
+        controller.SetGaming(isGaming);
          
     }
 }
