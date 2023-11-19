@@ -29,7 +29,6 @@ public class Panning : MonoBehaviour
         // Special case for gameboy
 
         if (positionCamera.x > -0.4f && positionCamera.x < 0.4f && positionCamera.y < -1.3f) {
-            // 0.4, -0.65 is location to snap to
             float gameboyPosX = 0f;
             float gameboyPosY = -2.2f;
             float distToGameboyX = gameboyPosX - positionCamera.x;
