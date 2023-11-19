@@ -5,7 +5,7 @@ using UnityEngine;
 public class DeskScript : MonoBehaviour
 {
     private Vector3 positionCamera;
-    public Camera camera;
+    new public Camera camera;
 
     void Start () {
         // camera = GetComponent<Camera>();
@@ -17,7 +17,7 @@ public class DeskScript : MonoBehaviour
     void Update()
     {
         positionCamera = camera.transform.position;
-        float xPos = positionCamera.x * 0.05f;
-        transform.position = new Vector3(1.25f - xPos, -1.3f, -1);
+        float xPos = positionCamera.x * 0.01f;
+        transform.position = new Vector3(- xPos, 0, -1);
     }
 }
