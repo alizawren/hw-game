@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class GameboyScript : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    private Vector3 positionCamera;
+    public Camera camera;
+
+    void Start () {
+        camera = GetComponent<Camera>();
+        positionCamera = camera.transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

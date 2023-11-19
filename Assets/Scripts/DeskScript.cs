@@ -17,7 +17,7 @@ public class DeskScript : MonoBehaviour
     void Update()
     {
         positionCamera = camera.transform.position;
-        float xPos = positionCamera.x * 0.1f;
+        float xPos = positionCamera.x * 0.05f;
         transform.position = new Vector3(1.25f - xPos, -1.3f, -1);
     }
 }
