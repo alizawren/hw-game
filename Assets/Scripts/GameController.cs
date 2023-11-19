@@ -42,29 +42,39 @@ public class GameController : MonoBehaviour
             switch (momState)
             {
                 case Mom.AWAY:
-                    if (90.0f < rng) // 10% chance to stay away
+                    // 50% chance for mom to stay away
+                    // reduces down to 0% based on suspicion
+                    if (50.0f + 100.0f * momSus <= rng)
                         momState = Mom.AWAY;
                     else
                         momState = Mom.OUTSIDE;
                     break;
                 case Mom.OUTSIDE:
-                    if (90.0f < rng)
+                    // 50% chance for mom to just walk by, decreasing to 0% at 50% sus
+                    if (50.0f + 100.0f * momSus <= rng)
                         momState = Mom.AWAY;
                     else
                         momState = Mom.INSIDE;
                     break;
                 case Mom.INSIDE:
-                    if (90.0f < rng)
+                    // 10% chance for mom to start watching closely, increasing up to 30%
+                    // 20% chance for mom to stay inside, increasing up to 40%
+                    // 50% chance for mom to step out, decreasing to 30%
+                    // 20% chance for mom to leave, decreasing to 0%
+                    // 100% chance for mom to watch closely if you are gaming
+                    if (isGaming || 90.0f - 20.0f * momSus <= rng)
                         momState = Mom.WATCHING_CLOSELY;
-                    else if (70.0f < rng)
+                    else if (70.0f - 40.0f * momSus <= rng)
                         momState = Mom.INSIDE;
-                    else if (50.0f < rng)
+                    else if (20.0f - 20.0f * momSus <= rng)
                         momState = Mom.OUTSIDE;
                     else
                         momState = Mom.AWAY;
                     break;
                 case Mom.WATCHING_CLOSELY:
-                    if (50.0f < rng)
+                    // mom will keep watching until sus < 50
+                    // otherwise 50% chance to stop or continue
+                    if (0.5f < momSus || 50.0f <= rng)
                         momState = Mom.WATCHING_CLOSELY;
                     else
                         momState = Mom.INSIDE;
@@ -80,18 +90,25 @@ public class GameController : MonoBehaviour
         if (Mom.INSIDE == momState)
         {
             if (isGaming)
-                momSus += 10.0f * Time.deltaTime; // arbitrary number
+                momSus += 0.10f * Time.deltaTime; // arbitrary number
             else if (isWorking)
-                momSus -= 5.0f * Time.deltaTime;
+                momSus -= 0.05f * Time.deltaTime;
         }
         else if (Mom.WATCHING_CLOSELY == momState)
         {
             if (isGaming)
-                momSus += 20.0f * Time.deltaTime;
+                momSus += 0.40f * Time.deltaTime;
             else if (!isWorking)
-                momSus += 10.0f * Time.deltaTime;
+                momSus += 0.10f * Time.deltaTime;
             else
-                momSus -= 10.0f * Time.deltaTime;
+                momSus -= 0.10f * Time.deltaTime;
+        }
+        else
+        {
+            // mom is worried about whether you are actually working
+            // hard cap so you cannot just passively lose
+            if (momSus < 0.90f)
+                momSus += 0.01f * Time.deltaTime;
         }
         
         momSus = Mathf.Max(momSus, 0.0f);
@@ -110,7 +127,7 @@ public class GameController : MonoBehaviour
         transitionMom();
         calculateSus();
 
-        if (100.0f <= momSus)
+        if (1.00f <= momSus)
         {
             // Game Over
             Debug.Log("GAME OVER");

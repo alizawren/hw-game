@@ -49,5 +49,7 @@ public class homeworkScript : MonoBehaviour
         transform.localScale = new Vector3(newScale, newScale, 1);
         float newYPos = startY + workProgress * 1.9f;
         transform.position = new Vector3(startX, newYPos, -2);
+
+        controller.SetWorking(isDoingWork);
     }
 }
