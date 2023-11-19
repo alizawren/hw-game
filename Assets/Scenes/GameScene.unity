@@ -515,7 +515,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   score: 0
-  isGaming: 0
 --- !u!4 &1396856541
 Transform:
   m_ObjectHideFlags: 0
@@ -895,6 +894,14 @@ PrefabInstance:
       propertyPath: camera
       value: 
       objectReference: {fileID: 215659937}
+    - target: {fileID: -1343466805345056167, guid: c07549ef6d9ee5641892da09728a2ae5, type: 3}
+      propertyPath: textScore
+      value: 
+      objectReference: {fileID: 1533290071}
+    - target: {fileID: -1343466805345056167, guid: c07549ef6d9ee5641892da09728a2ae5, type: 3}
+      propertyPath: controller
+      value: 
+      objectReference: {fileID: 1396856540}
     - target: {fileID: 1515059005992950988, guid: c07549ef6d9ee5641892da09728a2ae5, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -913,7 +920,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1515059005992950988, guid: c07549ef6d9ee5641892da09728a2ae5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.89
+      value: -3.4
       objectReference: {fileID: 0}
     - target: {fileID: 1515059005992950988, guid: c07549ef6d9ee5641892da09728a2ae5, type: 3}
       propertyPath: m_LocalPosition.z
