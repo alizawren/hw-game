@@ -6,10 +6,10 @@ public class DoorSwingScript : MonoBehaviour
 {
     private Vector3 RotateVector = new Vector3(0, -1f, 0);  // degrees per second to rotate in each axis. Set in inspector.
 
-    private float RotateSpeed = 0.5f;
+    private float RotateSpeed = -0.25f;
     private float RotateAmount = 0;
-    private float OpenRotateAmount = 165;
-    private float AjarAmount = 8;
+    private float OpenRotateAmount = -112;
+    private float AjarAmount = -8;
 
     public float state = 0; // neutral
     // Start is called before the first frame update
@@ -46,10 +46,10 @@ public class DoorSwingScript : MonoBehaviour
     }
 
     void Open() {
-        if (RotateAmount < OpenRotateAmount) {
+        if (RotateAmount > OpenRotateAmount) {
             RotateAmount += RotateSpeed;
             transform.Rotate(RotateVector * RotateSpeed);
-            if (RotateAmount > OpenRotateAmount) {
+            if (RotateAmount < OpenRotateAmount) {
                 float RotateDiff = OpenRotateAmount - RotateAmount;
                 RotateAmount = OpenRotateAmount;
                 transform.Rotate(RotateVector * RotateDiff);
@@ -58,34 +58,10 @@ public class DoorSwingScript : MonoBehaviour
     }
 
     void Ajar() {
-        if (RotateAmount < AjarAmount) {
-            RotateAmount += RotateSpeed;
-            transform.Rotate(RotateVector * RotateSpeed);
-            if (RotateAmount > OpenRotateAmount) {
-                float RotateDiff = OpenRotateAmount - RotateAmount;
-                RotateAmount = OpenRotateAmount;
-                transform.Rotate(RotateVector * RotateDiff);
-            }
-        } else if (RotateAmount > AjarAmount) {
-            RotateAmount -= RotateSpeed;
-            transform.Rotate(RotateVector * -RotateSpeed);
-            if (RotateAmount < OpenRotateAmount) {
-                float RotateDiff = OpenRotateAmount - RotateAmount;
-                RotateAmount = AjarAmount;
-                transform.Rotate(RotateVector * RotateDiff);
-            }
-        }
+
     }
 
     void Close() {
-        if (RotateAmount > 0) {
-            RotateAmount -= RotateSpeed;
-            transform.Rotate(RotateVector * -RotateSpeed);
-            if (RotateAmount < 0) {
-                float RotateDiff = -RotateAmount;
-                RotateAmount = 0;
-                transform.Rotate(RotateVector * RotateDiff);
-            }
-        }
+
     }
 }
