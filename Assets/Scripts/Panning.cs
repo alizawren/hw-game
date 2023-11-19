@@ -16,7 +16,15 @@ public class Panning : MonoBehaviour
     void Update()
     {
         Vector3 mousePos = Input.mousePosition;
-        positionCamera = new Vector3((mousePos.x - 360) * 0.0035f, (mousePos.y - 320) * 0.0035f, -10f);
+        float changeRatio = Mathf.Min(1.25f, Time.deltaTime / 0.00166f) * 0.01f + 0.002f;
+        float goalX = (mousePos.x - 360) * 0.0035f;
+        float goalY = (mousePos.y - 320) * 0.003f;
+        
+        float distX = goalX - positionCamera.x;
+        float distY = goalY - positionCamera.y;
+        float finalX = positionCamera.x + distX * changeRatio;
+        float finalY = positionCamera.y + distY * changeRatio;
+        positionCamera = new Vector3(finalX, finalY, -10f);
         camera.transform.position = positionCamera;
     }
 }
