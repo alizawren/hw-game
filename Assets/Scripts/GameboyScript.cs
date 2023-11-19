@@ -31,7 +31,7 @@ public class GameboyScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (camera.transform.position.x > -0.3f && camera.transform.position.x < 0.3f && camera.transform.position.y < -1.85f) {
+        if (camera.transform.position.x > -0.9f && camera.transform.position.x < 0.9f && camera.transform.position.y < -1.85f) {
             attemptingToPlay = true;
         } else {
             scoreMultiplier = 1;
@@ -51,8 +51,8 @@ public class GameboyScript : MonoBehaviour
         } else if (takeoutProgress > takeoutProgressMidway) {
             // above desk
             float localProgress = takeoutProgress - takeoutProgressMidway;
-            transform.position = new Vector3(startX, startY - takeoutProgressMidway * 2f + localProgress * 1.5f, -2);
-            float newScale = startScale + localProgress * 1.75f;
+            transform.position = new Vector3(startX, startY - takeoutProgressMidway * 2f + localProgress * 2.5f, -2);
+            float newScale = startScale + localProgress * 1.25f;
             transform.localScale = new Vector3(newScale, newScale, newScale);
         }
 
