@@ -6,6 +6,7 @@ public class GameboyScript : MonoBehaviour
 {
 
     // 0 == put away
+    public Animator animator;
     new public Camera camera;
     public GameController controller;
     private bool attemptingToPlay = true;
@@ -22,6 +23,7 @@ public class GameboyScript : MonoBehaviour
     private float startScale;
     private float score = 0;
     private float scoreMultiplier = 1;
+    private bool isGaming = false;
     void Start () {
         startX = transform.position.x;
         startY = transform.position.y;
@@ -56,9 +58,12 @@ public class GameboyScript : MonoBehaviour
             transform.localScale = new Vector3(newScale, newScale, newScale);
         }
 
-        if (takeoutProgress >= takeoutProgressFinish - 0.04f) {
+        if (!isGaming && takeoutProgress >= takeoutProgressFinish - 0.04f) {
+            isGaming = true;
+            animator.Play("loop");
             controller.SetGaming(true);
-        } else {
+        } else if (isGaming && takeoutProgress < takeoutProgressFinish - 0.04f) {
+            animator.Play("off");
             controller.SetGaming(false);
         }
          
