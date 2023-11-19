@@ -18,6 +18,6 @@ public class DeskScript : MonoBehaviour
     {
         positionCamera = camera.transform.position;
         float xPos = positionCamera.x * 0.01f;
-        transform.position = new Vector3(- xPos, 0, -1);
+        transform.position = new Vector3(- xPos, -0.5f, -1);
     }
 }
