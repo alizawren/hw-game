@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class GameboyScript : MonoBehaviour
 {
 
     // 0 == put away
     new public Camera camera;
+    public GameController controller;
     private bool attemptingToPlay = true;
     // takeoutProgress represents where the gameboy is.
     // At 0, it is hidden under desk
@@ -19,6 +20,8 @@ public class GameboyScript : MonoBehaviour
     private float startX;
     private float startY;
     private float startScale;
+    private float score = 0;
+    private float scoreMultiplier = 1;
     void Start () {
         startX = transform.position.x;
         startY = transform.position.y;
@@ -28,10 +31,10 @@ public class GameboyScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        if (camera.transform.position.x > -0.3f && camera.transform.position.x < 0.3f && camera.transform.position.y < -1.6f) {
+        if (camera.transform.position.x > -0.3f && camera.transform.position.x < 0.3f && camera.transform.position.y < -1.85f) {
             attemptingToPlay = true;
         } else {
+            scoreMultiplier = 1;
             attemptingToPlay = false;
         }
 
@@ -51,6 +54,12 @@ public class GameboyScript : MonoBehaviour
             transform.position = new Vector3(startX, startY - takeoutProgressMidway * 2f + localProgress * 1.5f, -2);
             float newScale = startScale + localProgress * 1.75f;
             transform.localScale = new Vector3(newScale, newScale, newScale);
+        }
+
+        if (takeoutProgress >= takeoutProgressFinish - 0.04f) {
+            controller.SetGaming(true);
+        } else {
+            controller.SetGaming(false);
         }
          
     }
