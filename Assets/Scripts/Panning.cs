@@ -6,10 +6,13 @@ public class Panning : MonoBehaviour
 {
     private Vector3 positionCamera;
     new private Camera camera;
+    private float zoomAmt;
+    private float panAmt = 0.0085f;
 
     void Start () {
         camera = GetComponent<Camera>();
         positionCamera = camera.transform.position;
+        zoomAmt = camera.orthographicSize;
     }
 
     // Update is called once per frame
@@ -17,13 +20,15 @@ public class Panning : MonoBehaviour
     {
         Vector3 mousePos = Input.mousePosition;
         float changeRatio = Mathf.Min(1.25f, Time.deltaTime / 0.00166f) * 0.01f + 0.002f;
-        float goalX = (mousePos.x - 360) * 0.0085f;
-        float goalY = (mousePos.y - 320) * 0.0085f;
+        float goalX = (mousePos.x - 360) * panAmt;
+        float goalY = (mousePos.y - 320) * panAmt;
         
         float distX = goalX - positionCamera.x;
         float distY = goalY - positionCamera.y;
         float finalX = positionCamera.x + distX * changeRatio;
         float finalY = positionCamera.y + distY * changeRatio;
+        finalX = Mathf.Max(-3, Mathf.Min(3, finalX));
+        finalY = Mathf.Max(-4, Mathf.Min(3.1f, finalY));
 
         positionCamera = new Vector3(finalX, finalY, -10f);
         // Special case for gameboy

@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour
     public float score = 0.0f;
     private bool isGaming = false;
     private bool momIsHere = false;
+    public GameObject mom;
 
     public void SetGaming (bool gaming)
     {
