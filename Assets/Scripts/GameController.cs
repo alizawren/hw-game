@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -15,11 +16,12 @@ public class GameController : MonoBehaviour
     public float score = 0.0f;
     public float momSus = 0.0f;
     public Mom momState = Mom.INSIDE;
-    public float transitionLockout = 0.0f;
+    public float transitionLockout = 3.0f;
     public GameObject mom;
     public bool isGaming = false;
     public bool isWorking = false;
-
+    public bool isPaused = false;
+    public PauseMenuController pauseMenu;
 
     public void SetGaming (bool gaming)
     {
@@ -31,11 +33,31 @@ public class GameController : MonoBehaviour
         isWorking = working;
     }
 
+    public void PauseGame ()
+    {
+        Time.timeScale = 0.0f;
+        isPaused = true;
+        pauseMenu.OpenMenu();
+    }
+
+    public void ResumeGame ()
+    {
+        Time.timeScale = 1.0f;
+        isPaused = false;
+        pauseMenu.CloseMenu();
+    }
+
+    public void QuitToMenu ()
+    {
+        ResumeGame();
+        SceneManager.LoadScene("MenuScene");
+    }
+
     private void transitionMom ()
     {
         transitionLockout = Mathf.Max(0.0f, transitionLockout - Time.deltaTime);
 
-        if (0.0f >= transitionLockout)
+        if (0 != Time.timeScale && 0.0f >= transitionLockout)
         {
             float rng = Random.Range(0.0f, 100.0f);
             // Transition Mom
@@ -119,6 +141,9 @@ public class GameController : MonoBehaviour
         score = 0.0f;
         momSus = 0.0f;
         momState = Mom.INSIDE;
+        Time.timeScale = 1.0f;
+        transitionLockout = 3.0f;
+        isPaused = false;
     }
 
     // Update is called once per frame
