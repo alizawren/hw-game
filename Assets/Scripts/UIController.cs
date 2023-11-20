@@ -7,7 +7,10 @@ public class UIController : MonoBehaviour
 {
     public Text textScore;
     public Text debugMom;
+    public Text debugNext;
     public Text debugLockout;
+    public Text debugCueTime;
+    public Text debugCue;
     public Text debugSus;
     public GameController gameController;
 
@@ -19,5 +22,8 @@ public class UIController : MonoBehaviour
         debugMom.text = "Mom: " + gameController.momState.ToString();
         debugSus.text = string.Format("SUS: {0:f}", gameController.momSus);
         debugLockout.text = string.Format("Lockout: {0:f}s", gameController.transitionLockout);
+        debugNext.text = "Next: " + gameController.getNextState();
+        debugCueTime.text = "Cue at: " + gameController.getCueTime();
+        debugCue.text = "Cue: " + gameController.getCue();
     }
 }
