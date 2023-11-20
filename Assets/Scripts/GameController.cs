@@ -11,12 +11,27 @@ public class GameController : MonoBehaviour
         OUTSIDE,
         INSIDE,
         WATCHING_CLOSELY,
+        UNDECIDED
+    }
+
+    private enum Cue
+    {
+        NONE,
+        GOING,
+        COMING
     }
 
     public float score = 0.0f;
     public float momSus = 0.0f;
     public Mom momState = Mom.INSIDE;
+    private Mom nextState = Mom.OUTSIDE;
     public float transitionLockout = 3.0f;
+    private float soundCueTime = 0.0f;
+    private Cue soundCue = Cue.NONE;
+    public AudioSource audio;
+    public AudioClip clipGoing;
+    public AudioClip clipComing;
+
     public GameObject mom;
     public bool isGaming = false;
     public bool isWorking = false;
@@ -53,57 +68,112 @@ public class GameController : MonoBehaviour
         SceneManager.LoadScene("MenuScene");
     }
 
+    private void playCue ()
+    {
+        if (Cue.NONE == soundCue)
+            return;
+
+        if (transitionLockout < soundCueTime)
+        {
+            // play cue sound
+            switch (soundCue)
+            {
+                case Cue.COMING:
+                    audio.PlayOneShot(clipComing, 1.0f);
+                    break;
+                case Cue.GOING:
+                    audio.PlayOneShot(clipGoing, 1.0f);
+                    break;
+                default:
+                    break;
+            }
+            soundCue = Cue.NONE;
+        }
+    }
+
+    // debugging functions
+    public string getCue ()
+    {
+        return soundCue.ToString();
+    }
+
+    public string getCueTime ()
+    {
+        return soundCueTime.ToString();
+    }
+
+    public string getNextState ()
+    {
+        return nextState.ToString();
+    }
+
+    //helper function
+    private void setNextTransition (Mom state, float lockout, float cueTime = 0.0f, Cue cue = Cue.NONE)
+    {
+        // the next state
+        nextState = state;
+        // how long to stay at the current state
+        transitionLockout = lockout + Random.Range(-0.5f, 0.5f);
+        // when to play the sound cue
+        soundCueTime = cueTime;
+        // which sound cue to play
+        soundCue = cue;
+    }
+
     private void transitionMom ()
     {
         transitionLockout = Mathf.Max(0.0f, transitionLockout - Time.deltaTime);
 
         if (0 != Time.timeScale && transitionLockout <= 0.0f)
         {
+            // Transition mom
+            momState = nextState;
+            nextState = Mom.UNDECIDED;
+
             float rng = Random.Range(0.0f, 100.0f);
-            // Transition Mom
+            // Pick next transition:
+            // pick the next state
+            // pick how long that state lasts
+            // pick when to play transition sounds
+            // pick what transition sound
             switch (momState)
             {
                 case Mom.AWAY:
                     // 50% chance for mom to stay away
                     // reduces down to 0% based on suspicion
                     if (50.0f + 100.0f * momSus <= rng)
-                        momState = Mom.AWAY;
+                        setNextTransition(Mom.AWAY, 1.0f);
                     else
-                        momState = Mom.OUTSIDE;
+                        setNextTransition(Mom.OUTSIDE, 6.0f, 5.0f, Cue.COMING);
                     break;
                 case Mom.OUTSIDE:
                     // 50% chance for mom to just walk by, decreasing to 0% at 50% sus
                     if (50.0f + 100.0f * momSus <= rng)
-                        momState = Mom.AWAY;
+                        setNextTransition(Mom.AWAY, 6.0f, 6.0f, Cue.GOING);
                     else
-                        momState = Mom.INSIDE;
+                        setNextTransition(Mom.INSIDE, 2.0f);
                     break;
                 case Mom.INSIDE:
                     // 10% chance for mom to start watching closely, increasing up to 30%
                     // 20% chance for mom to stay inside, increasing up to 40%
-                    // 50% chance for mom to step out, decreasing to 30%
-                    // 20% chance for mom to leave, decreasing to 0%
+                    // 70% chance for mom to step out, decreasing to 30%
                     // 100% chance for mom to watch closely if you are gaming
                     if (isGaming || 90.0f - 20.0f * momSus <= rng)
-                        momState = Mom.WATCHING_CLOSELY;
+                        setNextTransition(Mom.WATCHING_CLOSELY, 1.0f);
                     else if (70.0f - 40.0f * momSus <= rng)
-                        momState = Mom.INSIDE;
-                    else if (20.0f - 20.0f * momSus <= rng)
-                        momState = Mom.OUTSIDE;
+                        setNextTransition(Mom.INSIDE, 2.0f);
                     else
-                        momState = Mom.AWAY;
+                        setNextTransition(Mom.OUTSIDE, 1.0f);
                     break;
                 case Mom.WATCHING_CLOSELY:
                     // mom will keep watching until sus < 50
                     // otherwise 50% chance to stop or continue
                     if (0.5f < momSus || 50.0f <= rng)
-                        momState = Mom.WATCHING_CLOSELY;
+                        setNextTransition(Mom.WATCHING_CLOSELY, 1.0f);
                     else
-                        momState = Mom.INSIDE;
+                        setNextTransition(Mom.INSIDE, 1.0f);
                     break;
             }
-
-            transitionLockout += Random.Range(2.5f, 4.0f);
         }
     }
 
@@ -144,11 +214,13 @@ public class GameController : MonoBehaviour
         Time.timeScale = 1.0f;
         transitionLockout = 3.0f;
         isPaused = false;
+        soundCue = Cue.NONE;
     }
 
     // Update is called once per frame
     void Update()
     {
+        playCue();
         transitionMom();
         calculateSus();
 
