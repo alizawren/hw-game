@@ -90,8 +90,8 @@ public class GameboyScript : MonoBehaviour
             music.volume = masterMusicVolume * (1-focus);
             musicTrue.volume = masterMusicVolume * focus;
             camera.orthographicSize = cameraStartZoom - focus;
-            float targetCameraPosY = -6f;
-            float cameraFocusMult = focus * 0.25f;
+            float targetCameraPosY = -6.1f;
+            float cameraFocusMult = focus * 0.3f;
             float cameraNewPosY = camera.transform.position.y * (1 - cameraFocusMult) + targetCameraPosY * cameraFocusMult;
             camera.transform.position = new Vector3(camera.transform.position.x, cameraNewPosY, camera.transform.position.z);
             Color newColor = new Color (0, 0, 0, focus * 0.6f);
