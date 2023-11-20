@@ -13,7 +13,7 @@ public class GameboyIntro : MonoBehaviour
     void Start()
     {
         cameraPos = camera.transform.position;
-        StartCoroutine(DelayHide(2));
+        StartCoroutine(DelayHide(1.35f));
     }
 
     // Update is called once per frame
@@ -22,7 +22,7 @@ public class GameboyIntro : MonoBehaviour
         // Force camera position until this is gone
         camera.transform.position = cameraPos;
         if (state == "moving") {
-            float newPosY = transform.position.y - Time.deltaTime * 4f;
+            float newPosY = transform.position.y - Time.deltaTime * 5.5f;
             transform.position = new Vector3(transform.position.x, newPosY, transform.position.z);
             if (newPosY < -8f) {
                 Destroy(gameObject);

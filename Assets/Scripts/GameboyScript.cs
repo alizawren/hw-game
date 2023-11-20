@@ -46,7 +46,7 @@ public class GameboyScript : MonoBehaviour
         if (camera.transform.position.x > -0.9f && camera.transform.position.x < 0.9f && camera.transform.position.y < -1.85f) {
             attemptingToPlay = true;
             focus = Mathf.Min(1, focus + Time.deltaTime * 0.15f);
-        } else {
+        } else if (camera.transform.position.y > -1.8f) {
             focus = Mathf.Max(-0.5f, focus - Time.deltaTime);
             attemptingToPlay = false;
         }
@@ -65,7 +65,7 @@ public class GameboyScript : MonoBehaviour
             // above desk
             float localProgress = takeoutProgress - takeoutProgressMidway;
             transform.position = new Vector3(startX, startY - takeoutProgressMidway * 2f + localProgress * 2.5f, -2);
-            float newScale = startScale + localProgress * 1.25f;
+            float newScale = startScale + localProgress * 1.2f;
             transform.localScale = new Vector3(newScale, newScale, newScale);
         }
 
@@ -90,9 +90,10 @@ public class GameboyScript : MonoBehaviour
             music.volume = masterMusicVolume * (1-focus);
             musicTrue.volume = masterMusicVolume * focus;
             camera.orthographicSize = cameraStartZoom - focus;
-            float targetCameraPosY = -6.1f;
-            float cameraFocusMult = focus * 0.3f;
-            float cameraNewPosY = camera.transform.position.y * (1 - cameraFocusMult) + targetCameraPosY * cameraFocusMult;
+            float targetCameraPosY = -4.5f;
+            float distY = targetCameraPosY - camera.transform.position.y;
+            float cameraFocusMult = focus * 0.003f;
+            float cameraNewPosY = camera.transform.position.y + targetCameraPosY * cameraFocusMult;
             camera.transform.position = new Vector3(camera.transform.position.x, cameraNewPosY, camera.transform.position.z);
             Color newColor = new Color (0, 0, 0, focus * 0.6f);
             blackScreen.color = newColor;
