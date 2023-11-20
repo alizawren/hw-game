@@ -10,7 +10,11 @@ public class GameController : MonoBehaviour
         AWAY,
         OUTSIDE,
         INSIDE,
-        WATCHING_CLOSELY,
+        IN_CLOSET,
+        WATCHING_CLOSELY, // at desk
+        YELLING,
+        DAD,
+        UNDER_DESK,
         UNDECIDED
     }
 
@@ -18,7 +22,9 @@ public class GameController : MonoBehaviour
     {
         NONE,
         GOING,
-        COMING
+        COMING,
+        DOOR_KNOCK,
+        DOOR_SQUEAK
     }
 
     public float score = 0.0f;
@@ -28,11 +34,20 @@ public class GameController : MonoBehaviour
     public float transitionLockout = 3.0f;
     private float soundCueTime = 0.0f;
     private Cue soundCue = Cue.NONE;
-    public AudioSource audio;
+    // Audio Stuff
+    public AudioSource audioRoom;
+    public AudioSource audioKeyboard;
     public AudioClip clipGoing;
     public AudioClip clipComing;
+    public AudioClip clipKnockingA;
+    public AudioClip clipKnockingB;
+    public AudioClip clipDoorSqueak;
+    public AudioClip clipTypingA;
+    public AudioClip clipTypingB;
+    public AudioClip clipDishwashing;
 
     public GameObject mom;
+    public GameObject dad;
     public bool isGaming = false;
     public bool isWorking = false;
     public bool isPaused = false;
@@ -68,21 +83,53 @@ public class GameController : MonoBehaviour
         SceneManager.LoadScene("MenuScene");
     }
 
-    private void playCue ()
+    private void playSounds ()
     {
-        if (Cue.NONE == soundCue)
-            return;
+        if (isWorking)
+        {
+            if (!audioKeyboard.isPlaying)
+                if (0.50f <= Random.Range(0.0f, 1.0f))
+                    audioKeyboard.PlayOneShot(clipTypingA, 1.0f);
+                else
+                    audioKeyboard.PlayOneShot(clipTypingB, 1.0f);
+        }
+        else
+        {
+            if (audioKeyboard.isPlaying)
+                audioKeyboard.Stop();
+        }
 
+        if (Cue.NONE == soundCue)
+        {
+            if (Mom.AWAY == momState && !audioRoom.isPlaying)
+            {
+                audioRoom.time = Random.Range(20, 40);
+                audioRoom.Play();
+            }
+            return;
+        }
+
+        // kill all sounds from audioRoom
+        audioRoom.Stop();
         if (transitionLockout < soundCueTime)
         {
             // play cue sound
             switch (soundCue)
             {
                 case Cue.COMING:
-                    audio.PlayOneShot(clipComing, 1.0f);
+                    audioRoom.PlayOneShot(clipComing, 1.0f);
                     break;
                 case Cue.GOING:
-                    audio.PlayOneShot(clipGoing, 1.0f);
+                    audioRoom.PlayOneShot(clipGoing, 1.0f);
+                    break;
+                case Cue.DOOR_KNOCK:
+                    if (0.50f <= Random.Range(0.0f, 1.0f))
+                        audioRoom.PlayOneShot(clipKnockingA);
+                    else
+                        audioRoom.PlayOneShot(clipKnockingB);
+                    break;
+                case Cue.DOOR_SQUEAK:
+                    audioRoom.PlayOneShot(clipDoorSqueak);
                     break;
                 default:
                     break;
@@ -128,6 +175,7 @@ public class GameController : MonoBehaviour
         {
             // Transition mom
             momState = nextState;
+            mom.GetComponent<MomAnimate>().SetSpriteFromState(momState);
             nextState = Mom.UNDECIDED;
 
             float rng = Random.Range(0.0f, 100.0f);
@@ -148,22 +196,43 @@ public class GameController : MonoBehaviour
                     break;
                 case Mom.OUTSIDE:
                     // 50% chance for mom to just walk by, decreasing to 0% at 50% sus
+                    // 15% chance for dad
+                    // 35% chance to go inside increasing up to 85%
                     if (50.0f + 100.0f * momSus <= rng)
                         setNextTransition(Mom.AWAY, 6.0f, 6.0f, Cue.GOING);
+                    else if (15.0f <= rng)
+                        setNextTransition(Mom.INSIDE, 3.0f, 1.0f, Cue.DOOR_SQUEAK);
                     else
-                        setNextTransition(Mom.INSIDE, 2.0f);
+                        setNextTransition(Mom.DAD, 3.0f, 1.0f, Cue.DOOR_KNOCK);
                     break;
                 case Mom.INSIDE:
                     // 10% chance for mom to start watching closely, increasing up to 30%
-                    // 20% chance for mom to stay inside, increasing up to 40%
+                    // 5% chance for mom to stay inside, increasing up to 40%
+                    // 10% chance for mom to enter closet
+                    // 5% chance for mom to yell
                     // 70% chance for mom to step out, decreasing to 30%
                     // 100% chance for mom to watch closely if you are gaming
                     if (isGaming || 90.0f - 20.0f * momSus <= rng)
                         setNextTransition(Mom.WATCHING_CLOSELY, 1.0f);
-                    else if (70.0f - 40.0f * momSus <= rng)
+                    else if (85.0f - 40.0f * momSus <= rng)
                         setNextTransition(Mom.INSIDE, 2.0f);
+                    else if (75f - 40.0f * momSus <= rng)
+                        setNextTransition(Mom.IN_CLOSET, 4.0f, 1.0f, Cue.DOOR_SQUEAK); 
+                    else if (70f - 40.0f * momSus <= rng)
+                    {
+                        setNextTransition(Mom.YELLING, 2.0f);
+                        momSus = Mathf.Min(0.90f, momSus + 0.4f);
+                    }
                     else
-                        setNextTransition(Mom.OUTSIDE, 1.0f);
+                        setNextTransition(Mom.OUTSIDE, 3.0f, 1.0f, Cue.DOOR_SQUEAK);
+                    break;
+                case Mom.IN_CLOSET:
+                    // half chance to go to watching closely (up to 80% depending on suspicion)
+                    // half chance to go back to inside (down to 20%)
+                    if (50f - 30f * momSus <= rng)
+                        setNextTransition(Mom.WATCHING_CLOSELY, 2.0f, 1.0f, Cue.DOOR_SQUEAK);
+                    else 
+                        setNextTransition(Mom.INSIDE, 2.0f, 1.0f, Cue.DOOR_SQUEAK);
                     break;
                 case Mom.WATCHING_CLOSELY:
                     // mom will keep watching until sus < 50
@@ -172,6 +241,20 @@ public class GameController : MonoBehaviour
                         setNextTransition(Mom.WATCHING_CLOSELY, 1.0f);
                     else
                         setNextTransition(Mom.INSIDE, 1.0f);
+                    break;
+                case Mom.YELLING:
+                    // mom will keep yelling until sus < 50
+                    // otherwise 50% chance to stop or continue
+                    if (0.5f < momSus || 50.0f <= rng)
+                        setNextTransition(Mom.YELLING, 1.0f);
+                    else
+                        setNextTransition(Mom.INSIDE, 1.0f);
+                    break;
+                case Mom.DAD:
+                    dad.GetComponent<DadScript>().Appear();
+                    setNextTransition(Mom.OUTSIDE, 3.0f);
+                    break;
+                case Mom.UNDER_DESK:
                     break;
             }
         }
@@ -189,11 +272,27 @@ public class GameController : MonoBehaviour
         else if (Mom.WATCHING_CLOSELY == momState)
         {
             if (isGaming)
-                momSus += 0.40f * Time.deltaTime;
+                momSus += 0.30f * Time.deltaTime;
             else if (!isWorking)
                 momSus += 0.10f * Time.deltaTime;
             else
                 momSus -= 0.10f * Time.deltaTime;
+        }
+        else if (Mom.YELLING == momState)
+        {
+            if (isGaming)
+                momSus += 0.4f * Time.deltaTime;
+            else if (!isWorking)
+                momSus += 0.2f * Time.deltaTime;
+            else
+                momSus -= 0.1f * Time.deltaTime;
+        }
+        else if (Mom.IN_CLOSET == momState)
+        {
+            if (isGaming)
+                momSus += 0.1f * Time.deltaTime;
+            else if (isWorking)
+                momSus -= 0.05f * Time.deltaTime;
         }
         else
         {
@@ -220,7 +319,7 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        playCue();
+        playSounds();
         transitionMom();
         calculateSus();
 
