@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DadScript : MonoBehaviour
 {
+
     // Start is called before the first frame update
     void Start()
     {
@@ -14,5 +15,17 @@ public class DadScript : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void Appear()
+    {
+        AudioSource source = GameObject.Find("DadPhrase").GetComponent<AudioSource>();
+        source.Play();
+        GameObject.Find("DadSprite").GetComponent<SpriteRenderer>().color = new Color(1f,1f,1f,1f);
+    }
+
+    public void Disappear()
+    {
+        GameObject.Find("DadSprite").GetComponent<SpriteRenderer>().color = new Color(1f,1f,1f,0f);
     }
 }

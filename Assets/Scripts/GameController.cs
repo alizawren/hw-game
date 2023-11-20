@@ -10,7 +10,11 @@ public class GameController : MonoBehaviour
         AWAY,
         OUTSIDE,
         INSIDE,
-        WATCHING_CLOSELY,
+        IN_CLOSET,
+        WATCHING_CLOSELY, // at desk
+        YELLING,
+        DAD,
+        UNDER_DESK,
         UNDECIDED
     }
 
@@ -33,6 +37,7 @@ public class GameController : MonoBehaviour
     public AudioClip clipComing;
 
     public GameObject mom;
+    public GameObject dad;
     public bool isGaming = false;
     public bool isWorking = false;
     public bool isPaused = false;
@@ -148,22 +153,40 @@ public class GameController : MonoBehaviour
                     break;
                 case Mom.OUTSIDE:
                     // 50% chance for mom to just walk by, decreasing to 0% at 50% sus
+                    // 15% chance for dad
+                    // 35% chance to go inside
                     if (50.0f + 100.0f * momSus <= rng)
                         setNextTransition(Mom.AWAY, 6.0f, 6.0f, Cue.GOING);
+                    else if (35.0f <= rng)
+                        setNextTransition(Mom.DAD, 3.0f);
                     else
                         setNextTransition(Mom.INSIDE, 2.0f);
                     break;
                 case Mom.INSIDE:
                     // 10% chance for mom to start watching closely, increasing up to 30%
-                    // 20% chance for mom to stay inside, increasing up to 40%
+                    // 5% chance for mom to stay inside, increasing up to 40%
+                    // 10% chance for mom to enter closet
+                    // 5% chance for mom to yell
                     // 70% chance for mom to step out, decreasing to 30%
                     // 100% chance for mom to watch closely if you are gaming
                     if (isGaming || 90.0f - 20.0f * momSus <= rng)
                         setNextTransition(Mom.WATCHING_CLOSELY, 1.0f);
-                    else if (70.0f - 40.0f * momSus <= rng)
+                    else if (85.0f - 40.0f * momSus <= rng)
                         setNextTransition(Mom.INSIDE, 2.0f);
+                    else if (75f <= rng)
+                        setNextTransition(Mom.IN_CLOSET, 4.0f); 
+                    else if (70f <= rng)
+                        setNextTransition(Mom.YELLING, 2.0f);
                     else
                         setNextTransition(Mom.OUTSIDE, 1.0f);
+                    break;
+                case Mom.IN_CLOSET:
+                    // half chance to go to watching closely (up to 80% depending on suspicion)
+                    // half chance to go back to inside (down to 20%)
+                    if (50f - 30f * momSus <= rng)
+                        setNextTransition(Mom.WATCHING_CLOSELY, 2.0f);
+                    else 
+                        setNextTransition(Mom.INSIDE, 2.0f);
                     break;
                 case Mom.WATCHING_CLOSELY:
                     // mom will keep watching until sus < 50
@@ -172,6 +195,15 @@ public class GameController : MonoBehaviour
                         setNextTransition(Mom.WATCHING_CLOSELY, 1.0f);
                     else
                         setNextTransition(Mom.INSIDE, 1.0f);
+                    break;
+                case Mom.YELLING:
+                    // 
+                    break;
+                case Mom.DAD:
+                    // dad.GetComponent<DadScript>().Appear();
+                    setNextTransition(Mom.OUTSIDE, 3.0f);
+                    break;
+                case Mom.UNDER_DESK:
                     break;
             }
         }
@@ -189,11 +221,27 @@ public class GameController : MonoBehaviour
         else if (Mom.WATCHING_CLOSELY == momState)
         {
             if (isGaming)
-                momSus += 0.40f * Time.deltaTime;
+                momSus += 0.30f * Time.deltaTime;
             else if (!isWorking)
                 momSus += 0.10f * Time.deltaTime;
             else
                 momSus -= 0.10f * Time.deltaTime;
+        }
+        else if (Mom.YELLING == momState)
+        {
+            if (isGaming)
+                momSus += 0.4f * Time.deltaTime;
+            else if (!isWorking)
+                momSus += 0.2f * Time.deltaTime;
+            else
+                momSus -= 0.1f * Time.deltaTime;
+        }
+        else if (Mom.IN_CLOSET == momState)
+        {
+            if (isGaming)
+                momSus += 0.1f * Time.deltaTime;
+            else if (isWorking)
+                momSus -= 0.05f * Time.deltaTime;
         }
         else
         {
