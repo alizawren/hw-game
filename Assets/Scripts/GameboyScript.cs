@@ -29,6 +29,7 @@ public class GameboyScript : MonoBehaviour
     private float score = 0;
     private bool isGaming = false;
     private float cameraStartZoom;
+    private Panning panningScript;
     void Start () {
         startX = transform.position.x;
         startY = transform.position.y;
@@ -38,15 +39,16 @@ public class GameboyScript : MonoBehaviour
         musicTrue.Play();
         musicTrue.volume = 0;
         cameraStartZoom = camera.orthographicSize;
+        panningScript = camera.GetComponent<Panning>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (camera.transform.position.x > -0.9f && camera.transform.position.x < 0.9f && camera.transform.position.y < -1.85f) {
+        if (camera.transform.position.x > -0.4f && camera.transform.position.x < 0.4f && camera.transform.position.y < -1.85f) {
             attemptingToPlay = true;
             focus = Mathf.Min(1, focus + Time.deltaTime * 0.15f);
-        } else if (camera.transform.position.y > -1.8f) {
+        } else if (camera.transform.position.x < -0.4f || camera.transform.position.x > 0.4f || camera.transform.position.y > -1.8f) {
             focus = Mathf.Max(-0.5f, focus - Time.deltaTime);
             attemptingToPlay = false;
         }
@@ -90,14 +92,10 @@ public class GameboyScript : MonoBehaviour
             music.volume = masterMusicVolume * (1-focus);
             musicTrue.volume = masterMusicVolume * focus;
             camera.orthographicSize = cameraStartZoom - focus;
-            float targetCameraPosY = -4.5f;
-            float distY = targetCameraPosY - camera.transform.position.y;
-            float cameraFocusMult = focus * 0.003f;
-            float cameraNewPosY = camera.transform.position.y + targetCameraPosY * cameraFocusMult;
-            camera.transform.position = new Vector3(camera.transform.position.x, cameraNewPosY, camera.transform.position.z);
             Color newColor = new Color (0, 0, 0, focus * 0.6f);
             blackScreen.color = newColor;
         }
+        panningScript.UpdateGameboyFocus(focus);
 
         controller.SetGaming(isGaming);
          
