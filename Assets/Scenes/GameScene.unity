@@ -1115,7 +1115,7 @@ MonoBehaviour:
   m_FillRect: {fileID: 1228026821}
   m_HandleRect: {fileID: 1058985819}
   m_Direction: 0
-  m_MinValue: 0
+  m_MinValue: 0.00001
   m_MaxValue: 1
   m_WholeNumbers: 0
   m_Value: 0
@@ -1534,7 +1534,7 @@ MonoBehaviour:
   m_FillRect: {fileID: 74730762}
   m_HandleRect: {fileID: 447998998}
   m_Direction: 0
-  m_MinValue: 0
+  m_MinValue: 0.00001
   m_MaxValue: 1
   m_WholeNumbers: 0
   m_Value: 0
@@ -2539,6 +2539,10 @@ PrefabInstance:
       propertyPath: controller
       value: 
       objectReference: {fileID: 1396856540}
+    - target: {fileID: 57442707208655149, guid: c07549ef6d9ee5641892da09728a2ae5, type: 3}
+      propertyPath: OutputAudioMixerGroup
+      value: 
+      objectReference: {fileID: 1594036398959345286, guid: c560466ccb3deca448595f106d5927ac, type: 2}
     - target: {fileID: 1515059005992950988, guid: c07549ef6d9ee5641892da09728a2ae5, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -2680,7 +2684,7 @@ MonoBehaviour:
   m_FillRect: {fileID: 442459198}
   m_HandleRect: {fileID: 291929783}
   m_Direction: 0
-  m_MinValue: 0
+  m_MinValue: 0.00001
   m_MaxValue: 1
   m_WholeNumbers: 0
   m_Value: 0
