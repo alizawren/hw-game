@@ -133,6 +133,7 @@ public class GameController : MonoBehaviour
         {
             // Transition mom
             momState = nextState;
+            mom.GetComponent<MomAnimate>().SetSpriteFromState(momState);
             nextState = Mom.UNDECIDED;
 
             float rng = Random.Range(0.0f, 100.0f);
