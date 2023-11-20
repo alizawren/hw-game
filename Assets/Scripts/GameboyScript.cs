@@ -11,6 +11,7 @@ public class GameboyScript : MonoBehaviour
     public Animator animator;
     new public Camera camera;
     public GameController controller;
+    public SpriteRenderer blackScreen;
     private bool attemptingToPlay = true;
     // takeoutProgress represents where the gameboy is.
     // At 0, it is hidden under desk
@@ -20,12 +21,14 @@ public class GameboyScript : MonoBehaviour
     private float takeoutProgressMidway = 0.49f;
     private float takeoutProgressFinish = 1;
     private float takeoutProgressSpeed = 0.9f;
+    private float focus = -0.5f;
+    private float masterMusicVolume = 0;
     private float startX;
     private float startY;
     private float startScale;
     private float score = 0;
-    private float scoreMultiplier = 1;
     private bool isGaming = false;
+    private float cameraStartZoom;
     void Start () {
         startX = transform.position.x;
         startY = transform.position.y;
@@ -34,6 +37,7 @@ public class GameboyScript : MonoBehaviour
         music.volume = 0;
         musicTrue.Play();
         musicTrue.volume = 0;
+        cameraStartZoom = camera.orthographicSize;
     }
 
     // Update is called once per frame
@@ -41,8 +45,9 @@ public class GameboyScript : MonoBehaviour
     {
         if (camera.transform.position.x > -0.9f && camera.transform.position.x < 0.9f && camera.transform.position.y < -1.85f) {
             attemptingToPlay = true;
+            focus = Mathf.Min(1, focus + Time.deltaTime * 0.15f);
         } else {
-            scoreMultiplier = 1;
+            focus = Mathf.Max(-0.5f, focus - Time.deltaTime);
             attemptingToPlay = false;
         }
 
@@ -66,14 +71,31 @@ public class GameboyScript : MonoBehaviour
 
         if (!isGaming && takeoutProgress >= takeoutProgressFinish - 0.04f) {
             isGaming = true;
-            music.volume = 1;
+            masterMusicVolume = 1;
             animator.Play("loop");
         } else if (isGaming && takeoutProgress < takeoutProgressFinish - 0.04f) {
             isGaming = false;
             animator.Play("off");
         }
         if (!attemptingToPlay) {
-            music.volume = Mathf.Max(0, takeoutProgress * 2 - 1);
+            masterMusicVolume = Mathf.Max(0, takeoutProgress * 2 - 1);
+        }
+
+        if (focus <= 0) {
+            music.volume = masterMusicVolume;
+            camera.orthographicSize = cameraStartZoom;
+            Color newColor = new Color (0, 0, 0, 0);
+            blackScreen.color = newColor;
+        } else {
+            music.volume = masterMusicVolume * (1-focus);
+            musicTrue.volume = masterMusicVolume * focus;
+            camera.orthographicSize = cameraStartZoom - focus;
+            float targetCameraPosY = -6.1f;
+            float cameraFocusMult = focus * 0.3f;
+            float cameraNewPosY = camera.transform.position.y * (1 - cameraFocusMult) + targetCameraPosY * cameraFocusMult;
+            camera.transform.position = new Vector3(camera.transform.position.x, cameraNewPosY, camera.transform.position.z);
+            Color newColor = new Color (0, 0, 0, focus * 0.6f);
+            blackScreen.color = newColor;
         }
 
         controller.SetGaming(isGaming);
