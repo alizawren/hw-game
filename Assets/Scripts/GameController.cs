@@ -197,11 +197,16 @@ public class GameController : MonoBehaviour
                         setNextTransition(Mom.INSIDE, 1.0f);
                     break;
                 case Mom.YELLING:
-                    // 
+                    // mom will keep yelling until sus < 50
+                    // otherwise 50% chance to stop or continue
+                    if (0.5f < momSus || 50.0f <= rng)
+                        setNextTransition(Mom.YELLING, 1.0f);
+                    else
+                        setNextTransition(Mom.INSIDE, 1.0f);
                     break;
                 case Mom.DAD:
-                    // dad.GetComponent<DadScript>().Appear();
-                    setNextTransition(Mom.OUTSIDE, 3.0f);
+                    dad.GetComponent<DadScript>().Appear();
+                    setNextTransition(Mom.OUTSIDE, 5.0f);
                     break;
                 case Mom.UNDER_DESK:
                     break;
