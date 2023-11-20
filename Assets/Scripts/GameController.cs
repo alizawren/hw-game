@@ -57,7 +57,7 @@ public class GameController : MonoBehaviour
     {
         transitionLockout = Mathf.Max(0.0f, transitionLockout - Time.deltaTime);
 
-        if (0 != Time.timeScale && 0.0f >= transitionLockout)
+        if (0 != Time.timeScale && transitionLockout <= 0.0f)
         {
             float rng = Random.Range(0.0f, 100.0f);
             // Transition Mom
@@ -103,7 +103,7 @@ public class GameController : MonoBehaviour
                     break;
             }
 
-            transitionLockout += 3.0f;
+            transitionLockout += Random.Range(2.5f, 4.0f);
         }
     }
 
