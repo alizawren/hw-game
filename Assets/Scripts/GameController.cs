@@ -206,7 +206,7 @@ public class GameController : MonoBehaviour
                     break;
                 case Mom.DAD:
                     dad.GetComponent<DadScript>().Appear();
-                    setNextTransition(Mom.OUTSIDE, 5.0f);
+                    setNextTransition(Mom.OUTSIDE, 3.0f);
                     break;
                 case Mom.UNDER_DESK:
                     break;
