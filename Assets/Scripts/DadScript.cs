@@ -19,9 +19,7 @@ public class DadScript : MonoBehaviour
 
     public void Appear()
     {
-        Debug.Log("Playing dad phrase");
         AudioSource source = GameObject.Find("DadPhrase").GetComponent<AudioSource>();
-        Debug.Log(source.ToString());
         source.Play();
         GameObject.Find("DadSprite").GetComponent<SpriteRenderer>().color = new Color(1f,1f,1f,1f);
 
