@@ -174,9 +174,17 @@ public class GameController : MonoBehaviour
         if (0 != Time.timeScale && transitionLockout <= 0.0f)
         {
             // Transition mom
+            Mom prevState = momState;
             momState = nextState;
-            mom.GetComponent<MomAnimate>().SetSpriteFromState(momState);
+            if (prevState != momState) {
+                mom.GetComponent<MomAnimate>().SetSpriteFromState(momState);
+            }
             nextState = Mom.UNDECIDED;
+
+            if (momSus >= 1.0f) {
+                setNextTransition(Mom.UNDER_DESK, 3f);
+                return;
+            }
 
             float rng = Random.Range(0.0f, 100.0f);
             // Pick next transition:
@@ -213,7 +221,7 @@ public class GameController : MonoBehaviour
                     // 70% chance for mom to step out, decreasing to 30%
                     // 100% chance for mom to watch closely if you are gaming
                     if (isGaming || 90.0f - 20.0f * momSus <= rng)
-                        setNextTransition(Mom.WATCHING_CLOSELY, 1.0f);
+                        setNextTransition(Mom.WATCHING_CLOSELY, 2.0f);
                     else if (85.0f - 40.0f * momSus <= rng)
                         setNextTransition(Mom.INSIDE, 2.0f);
                     else if (75f - 40.0f * momSus <= rng)
@@ -236,19 +244,25 @@ public class GameController : MonoBehaviour
                     break;
                 case Mom.WATCHING_CLOSELY:
                     // mom will keep watching until sus < 50
-                    // otherwise 50% chance to stop or continue
-                    if (0.5f < momSus || 50.0f <= rng)
-                        setNextTransition(Mom.WATCHING_CLOSELY, 1.0f);
+                    // otherwise 50% chance to start yelling,
+                    // 25% to continue watching closely,
+                    // 25% to stop
+                    if (momSus < 0.5f)
+                        setNextTransition(Mom.INSIDE, 2.0f);
+                    else if (50.0f <= rng)
+                        setNextTransition(Mom.YELLING, 2.0f);
+                    else if (25.0f <= rng)
+                        setNextTransition(Mom.WATCHING_CLOSELY, 2.0f);
                     else
-                        setNextTransition(Mom.INSIDE, 1.0f);
+                        setNextTransition(Mom.INSIDE, 2.0f);
                     break;
                 case Mom.YELLING:
                     // mom will keep yelling until sus < 50
                     // otherwise 50% chance to stop or continue
                     if (0.5f < momSus || 50.0f <= rng)
-                        setNextTransition(Mom.YELLING, 1.0f);
+                        setNextTransition(Mom.YELLING, 3.0f);
                     else
-                        setNextTransition(Mom.INSIDE, 1.0f);
+                        setNextTransition(Mom.INSIDE, 3.0f);
                     break;
                 case Mom.DAD:
                     dad.GetComponent<DadScript>().Appear();
@@ -272,7 +286,7 @@ public class GameController : MonoBehaviour
         else if (Mom.WATCHING_CLOSELY == momState)
         {
             if (isGaming)
-                momSus += 0.30f * Time.deltaTime;
+                momSus += 0.20f * Time.deltaTime;
             else if (!isWorking)
                 momSus += 0.10f * Time.deltaTime;
             else
@@ -281,9 +295,9 @@ public class GameController : MonoBehaviour
         else if (Mom.YELLING == momState)
         {
             if (isGaming)
-                momSus += 0.4f * Time.deltaTime;
+                momSus += 0.3f * Time.deltaTime;
             else if (!isWorking)
-                momSus += 0.2f * Time.deltaTime;
+                momSus += 0.15f * Time.deltaTime;
             else
                 momSus -= 0.1f * Time.deltaTime;
         }

@@ -26,6 +26,7 @@ public class MomAnimate : MonoBehaviour
         Sprite newSprite;
         gameObject.GetComponent<SpriteRenderer>().color = new Color(1f,1f,1f,1f);
         gameObject.GetComponent<Transform>().position = usualPosition;
+        gameObject.GetComponent<Transform>().localScale = new Vector3(1.25f,1.25f,1f);
         switch (momState)
         {
             case GameController.Mom.AWAY: case GameController.Mom.OUTSIDE: case GameController.Mom.DAD:
@@ -54,6 +55,9 @@ public class MomAnimate : MonoBehaviour
                 gameObject.GetComponent<SpriteRenderer>().sprite = newSprite;
             break;
             case GameController.Mom.YELLING:
+                gameObject.GetComponent<Transform>().position = new Vector3(0f, -0.6f, -2f);
+                gameObject.GetComponent<Transform>().localScale = new Vector3(0.9f, 0.9f, 1f);
+
                 spritePath = "Sprites/Mom/mom_yelling";
                 newSprite = Resources.Load<Sprite>(spritePath);
                 gameObject.GetComponent<SpriteRenderer>().sprite = newSprite;
@@ -62,6 +66,9 @@ public class MomAnimate : MonoBehaviour
                 source.Play();
             break;
             case GameController.Mom.UNDER_DESK:
+                gameObject.GetComponent<Transform>().position = new Vector3(-0.11f, -0.48f, 0f);
+                gameObject.GetComponent<Transform>().localScale = new Vector3(0.9f, 0.9f, 1f);
+
                 spritePath = "Sprites/Mom/mom_under_desk";
                 newSprite = Resources.Load<Sprite>(spritePath);
                 gameObject.GetComponent<SpriteRenderer>().sprite = newSprite;
